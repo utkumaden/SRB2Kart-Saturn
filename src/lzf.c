@@ -166,7 +166,7 @@ typedef unsigned char u8;
 #ifdef LZF_HSLOT
 # define LZF_HSLOT_BIAS ((const u8 *)in_data)
 #else
-# ifdef LZF_USE_OFFSETS
+# if LZF_USE_OFFSETS
 #  define LZF_HSLOT_BIAS ((const u8 *)in_data)
    typedef unsigned int LZF_HSLOT;
 # else
