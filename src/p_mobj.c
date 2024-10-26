@@ -3242,34 +3242,12 @@ void P_DestroyRobots(void)
 	}
 }
 
-// P_CameraThinker
-//
-// Process the mobj-ish required functions of the camera
-boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled)
+// the below is chasecam only, if you're curious. check out P_CalcPostImg in p_user.c for first person
+static void P_CalcChasePostImg(player_t *player, camera_t *thiscam)
 {
-	boolean itsatwodlevel = false;
-	boolean flipcam = (player->pflags & PF_FLIPCAM && !(player->pflags & PF_NIGHTSMODE) && player->mo->eflags & MFE_VERTICALFLIP);
+	const boolean flipcam = (player->pflags & PF_FLIPCAM && !(player->pflags & PF_NIGHTSMODE) && player->mo->eflags & MFE_VERTICALFLIP);
 	UINT16 postimgflags = 0;
 	UINT8 i;
-
-	// This can happen when joining
-	if (thiscam->subsector == NULL || thiscam->subsector->sector == NULL)
-		return true;
-
-	if (twodlevel)
-		itsatwodlevel = true;
-	else
-	{
-		for (i = 0; i <= splitscreen; i++)
-		{
-			if (thiscam == &camera[i] && players[displayplayers[i]].mo
-				&& (players[displayplayers[i]].mo->flags2 & MF2_TWOD))
-			{
-				itsatwodlevel = true;
-				break;
-			}
-		}
-	}
 
 	if (encoremode)
 		postimgflags |= POSTIMG_MIRROR;
@@ -3310,6 +3288,18 @@ boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled
 		players[displayplayers[i]].postimgflags = postimgflags;
 		break;
 	}
+}
+
+// P_CameraThinker
+//
+// Process the mobj-ish required functions of the camera
+boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled)
+{
+	// This can happen when joining
+	if (thiscam->subsector == NULL || thiscam->subsector->sector == NULL)
+		return true;
+
+	P_CalcChasePostImg(player, thiscam);
 
 	if (thiscam->momx || thiscam->momy)
 	{
@@ -3337,8 +3327,7 @@ boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled
 		}
 	}
 
-	if (!itsatwodlevel)
-		P_CheckCameraPosition(thiscam->x, thiscam->y, thiscam);
+	P_CheckCameraPosition(thiscam->x, thiscam->y, thiscam);
 
 	thiscam->subsector = R_PointInSubsector(thiscam->x, thiscam->y);
 	thiscam->floorz = tmfloorz;
@@ -3350,7 +3339,7 @@ boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled
 		thiscam->z += thiscam->momz + player->mo->pmomz;
 
 #ifndef NOCLIPCAM
-		if (!itsatwodlevel && !(player->pflags & PF_NOCLIP || leveltime < introtime))
+		if (!(player->pflags & PF_NOCLIP || leveltime < introtime))
 		{
 			// clip movement
 			if (thiscam->z <= thiscam->floorz) // hit the floor
@@ -3393,13 +3382,13 @@ boolean P_CameraThinker(player_t *player, camera_t *thiscam, boolean resetcalled
 #endif
 	}
 
-	if (itsatwodlevel
-	|| (thiscam->ceilingz - thiscam->z < thiscam->height
-		&& thiscam->ceilingz >= thiscam->z))
+	if (thiscam->ceilingz - thiscam->z < thiscam->height
+		&& thiscam->ceilingz >= thiscam->z)
 	{
 		thiscam->ceilingz = thiscam->z + thiscam->height;
 		thiscam->floorz = thiscam->z;
 	}
+
 	return false;
 }
 
