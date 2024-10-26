@@ -510,7 +510,7 @@ void P_UpdateSegLightOffset(seg_t *li)
 // Loads the SEGS resource from a level.
 static void P_LoadRawSegs(UINT8 *data)
 {
-	INT32 linedef, side;
+	INT32 rawlinedef, rawside;
 	mapseg_t *ml = (mapseg_t*)data;
 	seg_t *li = segs;
 	line_t *ldef;
@@ -530,14 +530,14 @@ static void P_LoadRawSegs(UINT8 *data)
 
 		li->angle = (SHORT(ml->angle))<<FRACBITS;
 		li->offset = (SHORT(ml->offset))<<FRACBITS;
-		linedef = SHORT(ml->linedef);
-		ldef = &lines[linedef];
+		rawlinedef = SHORT(ml->linedef);
+		ldef = &lines[rawlinedef];
 		li->linedef = ldef;
-		li->side = side = SHORT(ml->side);
-		li->sidedef = &sides[ldef->sidenum[side]];
-		li->frontsector = sides[ldef->sidenum[side]].sector;
+		li->side = rawside = SHORT(ml->side);
+		li->sidedef = &sides[ldef->sidenum[rawside]];
+		li->frontsector = sides[ldef->sidenum[rawside]].sector;
 		if (ldef->flags & ML_TWOSIDED)
-			li->backsector = sides[ldef->sidenum[side^1]].sector;
+			li->backsector = sides[ldef->sidenum[rawside^1]].sector;
 		else
 			li->backsector = 0;
 
