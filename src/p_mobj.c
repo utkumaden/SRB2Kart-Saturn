@@ -6893,6 +6893,9 @@ void P_MobjThinker(mobj_t *mobj)
 	// separate thinker
 	if (mobj->flags & MF_PUSHABLE || (mobj->info->flags & MF_PUSHABLE && mobj->fuse))
 	{
+		if (!mobj)
+			return;
+
 		P_MobjCheckWater(mobj);
 		P_PushableThinker(mobj);
 
