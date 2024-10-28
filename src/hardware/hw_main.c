@@ -169,6 +169,7 @@ static void CV_glpalettedepth_OnChange(void);
 //
 // CV_PossibleValue_t
 //
+
 static CV_PossibleValue_t glscreentextures_cons_t[] = {{0, "Off"}, {1, "Wipes Only"}, {2, "All"}, {0, NULL}};
 static CV_PossibleValue_t glfakecontrast_cons_t[] = {{0, "Off"}, {1, "Standard"}, {2, "Smooth"}, {0, NULL}};
 static CV_PossibleValue_t glshaders_cons_t[] = {{0, "Off"}, {1, "On"}, {2, "Ignore custom shaders"}, {0, NULL}};
@@ -202,7 +203,7 @@ consvar_t cv_glscreentextures = {"gr_screentextures", "All", CV_CALL|CV_SAVE, gl
 consvar_t cv_glframebuffer = {"gr_framebuffer", "Off", CV_SAVE|CV_CALL|CV_NOINIT, CV_OnOff, CV_glframebuffer_OnChange, 0, NULL, NULL, 0, 0, NULL};
 #endif
 
-consvar_t cv_glmdls = {"gr_mdls", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
+consvar_t cv_glmdls = {"gr_mdls", "Off", CV_SAVE|CV_CALL, CV_OnOff, M_UpdateOGLMenu, 0, NULL, NULL, 0, 0, NULL};
 consvar_t cv_glfallbackplayermodel = {"gr_fallbackplayermodel", "Off", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
 
 consvar_t cv_glspritebillboarding = {"gr_spritebillboarding", "On", CV_SAVE, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
@@ -251,6 +252,7 @@ static void CV_screentextures_OnChange(void)
 #endif
 	}
 	HWD.pfnSetSpecialState(HWD_SET_SCREEN_TEXTURES, cv_glscreentextures.value);
+	M_UpdateOGLMenu();
 }
 
 #ifdef USE_FBO_OGL
@@ -263,6 +265,7 @@ static void CV_glframebuffer_OnChange(void)
 	HWD.pfnSetSpecialState(HWD_SET_FRAMEBUFFER, cv_glframebuffer.value);
 	I_DownSample();
 	RefreshOGLSDLSurface();
+	M_UpdateOGLMenu();
 }
 #endif
 
@@ -275,6 +278,7 @@ static void CV_glshaders_OnChange(void)
 		// can't do palette rendering without shaders, so update the state if needed
 		HWR_TogglePaletteRendering();
 	}
+	M_UpdateOGLMenu();
 }
 
 static void CV_gllightdithering_OnChange(void)
@@ -309,6 +313,7 @@ static void CV_glpaletterendering_OnChange(void)
 		HWR_CompileShaders();
 		HWR_TogglePaletteRendering();
 	}
+	M_UpdateOGLMenu();
 }
 
 static void CV_glpalettedepth_OnChange(void)
