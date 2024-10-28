@@ -1170,14 +1170,14 @@ static void R_ProjectSprite(mobj_t *thing)
 
 	INT32 dist = -1;
 
-	if (cv_grmaxinterpdist.value)
+	if (cv_maxinterpdist.value)
 		dist = R_QuickCamDist(thing->x, thing->y);
 
 	// uncapped/interpolation
 	interpmobjstate_t interp = {0};
 
 	// do interpolation
-	if (R_UsingFrameInterpolation() && !paused && (!cv_grmaxinterpdist.value || dist < cv_grmaxinterpdist.value))
+	if (R_UsingFrameInterpolation() && !paused && (!cv_maxinterpdist.value || dist < cv_maxinterpdist.value))
 	{
 		R_InterpolateMobjState(oldthing, rendertimefrac, &interp);
 	}
@@ -1739,7 +1739,7 @@ static void R_ProjectPrecipitationSprite(precipmobj_t *thing)
 
 	INT32 dist = 1;
 
-	if (cv_grmaxinterpdist.value)
+	if (cv_maxinterpdist.value)
 		dist = R_QuickCamDist(thing->x, thing->y);
 
 	// uncapped/interpolation
@@ -1752,7 +1752,7 @@ static void R_ProjectPrecipitationSprite(precipmobj_t *thing)
 	}
 
 	// do interpolation
-	if (R_UsingFrameInterpolation() && !paused && (!cv_grmaxinterpdist.value || dist < cv_grmaxinterpdist.value))
+	if (R_UsingFrameInterpolation() && !paused && (!cv_maxinterpdist.value || dist < cv_maxinterpdist.value))
 	{
 		R_InterpolatePrecipMobjState(thing, rendertimefrac, &interp);
 	}
