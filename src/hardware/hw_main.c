@@ -3312,7 +3312,7 @@ static void HWR_RenderBSPNode(INT32 bspnum)
 		bsp = &nodes[bspnum];
 
 		// Decide which side the view point is on.
-		side = R_PointOnSideRender(viewx, viewy, bsp);
+		side = R_PointOnSide(viewx, viewy, bsp);
 
 		// Recursively divide front space.
 		if (HWR_PortalCheckBBox(bsp->bbox[side]))
