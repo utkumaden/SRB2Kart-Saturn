@@ -3121,6 +3121,8 @@ static void HWR_RenderBSPNode(INT32 bspnum)
 	// PORTAL CULLING
 	if (portalclipline && portalcullsector)
 	{
+		// skip all subsectors encountered before the portal
+		// destination's front sector
 		if (portalcullsector != subsectors[bspnum & ~NF_SUBSECTOR].sector)
 			return;
 		else
