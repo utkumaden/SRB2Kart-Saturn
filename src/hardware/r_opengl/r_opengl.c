@@ -1178,7 +1178,10 @@ inline void GLFramebuffer_Enable(void)
 
 void GLFramebuffer_Disable(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || fboinit == false)
+		return;
+
+	if (FramebufferObject == 0 && RenderbufferObject == 0)
 		return;
 
 	pglBindFramebuffer(GL_FRAMEBUFFER, 0);
