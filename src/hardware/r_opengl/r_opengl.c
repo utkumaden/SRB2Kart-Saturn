@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include "../../r_local.h" // For rendertimefrac, used for the leveltime shader uniform
+#include "../../i_video.h" // for UseScreenFBO
 #include "r_opengl.h"
 #include "r_vbo.h"
 #include "../hw_shaders.h"
@@ -785,7 +786,6 @@ void SetupGLFunc4(void)
 #endif
 }
 
-#ifdef USE_FBO_OGL
 EXPORT boolean HWRAPI(InitShaders) (void)
 {
 	if (!pglUseProgram)
