@@ -781,8 +781,11 @@ void I_DownSample(void)
 	}
 	else
 	{
-		downsample = false; // its not so no need to do crap
-		RefreshOGLSDLSurface();
+		if (downsample == true)
+		{
+			downsample = false; // its not so no need to do crap
+			RefreshOGLSDLSurface();
+		}
 	}
 }
 

@@ -210,7 +210,7 @@ boolean OglSdlSurface(INT32 w, INT32 h)
 
 	if (RenderToFramebuffer)
 		GLFramebuffer_Enable();
-	else
+	else if (!first_init)
 		GLFramebuffer_Disable();
 #endif
 

@@ -706,7 +706,15 @@ static void Shader_SetUniforms(FSurfaceInfo *Surface, GLRGBAFloat *poly, GLRGBAF
 static GLRGBAFloat shader_defaultcolor = {1.0f, 1.0f, 1.0f, 1.0f};
 
 #ifdef USE_FBO_OGL
-static boolean GLFramebuffer_IsFuncAvailible(void);
+static boolean GLFramebuffer_CheckExt(void)
+{
+	//this stuff needs atleast OGL 3.0
+	if (majorGL < 3)
+		return false;
+
+	// check if all needed gl extensions are available
+	return (GL_isExtAvailable("GL_ARB_framebuffer_no_attachments", gl_extensions) && GL_isExtAvailable("GL_ARB_framebuffer_object", gl_extensions) && GL_isExtAvailable("GL_ARB_framebuffer_sRGB", gl_extensions));
+}
 #endif
 
 void SetupGLFunc4(void)
@@ -753,7 +761,7 @@ void SetupGLFunc4(void)
 	pglGetUniformLocation = GetGLFunc("glGetUniformLocation");
 
 #ifdef USE_FBO_OGL
-	if (GLFramebuffer_IsFuncAvailible())
+	if (GLFramebuffer_CheckExt())
 	{
 		pglGenFramebuffers = GetGLFunc("glGenFramebuffers");
 		pglBindFramebuffer = GetGLFunc("glBindFramebuffer");
@@ -766,6 +774,12 @@ void SetupGLFunc4(void)
 		pglRenderbufferStorage = GetGLFunc("glRenderbufferStorage");
 		pglFramebufferRenderbuffer = GetGLFunc("glFramebufferRenderbuffer");
 
+		// check if ALL functions are availible
+		if (pglGenFramebuffers && pglBindFramebuffer &&
+		pglDeleteFramebuffers && pglFramebufferTexture2D &&
+		pglCheckFramebufferStatus && pglGenRenderbuffers &&
+		pglBindRenderbuffer && pglDeleteRenderbuffers &&
+		pglRenderbufferStorage && pglFramebufferRenderbuffer)
 		supportFBO = true;
 	}
 #endif
