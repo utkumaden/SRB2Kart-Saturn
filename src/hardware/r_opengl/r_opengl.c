@@ -121,7 +121,6 @@ static GLint   viewport[4];
 
 #ifdef USE_FBO_OGL
 GLuint FramebufferObject, FramebufferTexture, RenderbufferObject;
-GLboolean FrameBufferEnabled = GL_FALSE, RenderToFramebuffer = GL_FALSE;
 
 boolean supportFBO = false;
 static boolean fboinit = false;
@@ -1061,7 +1060,7 @@ EXPORT void HWRAPI(DeleteTexture) (GLMipmap_t *pTexInfo)
 #ifdef USE_FBO_OGL
 static void GLFramebuffer_GenerateAttachments(void)
 {
-	if (!supportFBO || !cv_glframebuffer.value)
+	if (!supportFBO || !UseScreenFBO())
 		return;
 
 	// Bind the framebuffer
@@ -1127,7 +1126,7 @@ void GLFramebuffer_DeleteAttachments(void)
 
 static void GLFramebuffer_Generate(void)
 {
-	if (!supportFBO || !cv_glframebuffer.value)
+	if (!supportFBO || !UseScreenFBO())
 		return;
 
 	// Generate the framebuffer
@@ -1164,7 +1163,7 @@ inline void GLFramebuffer_Unbind(void)
 
 inline void GLFramebuffer_Enable(void)
 {
-	if (!supportFBO || !cv_glframebuffer.value)
+	if (!supportFBO || !UseScreenFBO())
 		return;
 
 	if (FramebufferObject == 0)
@@ -2377,17 +2376,6 @@ EXPORT void HWRAPI(SetSpecialState) (hwdspecialstate_t IdState, INT32 Value)
 		case HWD_SET_SHADERS:
 			gl_allowshaders = Value;
 			break;
-#ifdef USE_FBO_OGL
-		case HWD_SET_FRAMEBUFFER:
-			FrameBufferEnabled = (Value && supportFBO) ? GL_TRUE : GL_FALSE;
-
-			if (!supportFBO)
-			{
-				FrameBufferEnabled = GL_FALSE;
-				CV_Set(&cv_glframebuffer, "Off");
-			}
-			break;
-#endif
 		case HWD_SET_TEXTUREFILTERMODE:
 			switch (Value)
 			{
