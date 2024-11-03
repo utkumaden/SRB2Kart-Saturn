@@ -124,6 +124,7 @@ GLuint FramebufferObject, FramebufferTexture, RenderbufferObject;
 GLboolean FrameBufferEnabled = GL_FALSE, RenderToFramebuffer = GL_FALSE;
 
 boolean supportFBO = false;
+static boolean fboinit = false;
 #endif
 
 // Sryder:	NextTexAvail is broken for these because palette changes or changes to the texture filter or antialiasing
@@ -1060,7 +1061,7 @@ EXPORT void HWRAPI(DeleteTexture) (GLMipmap_t *pTexInfo)
 #ifdef USE_FBO_OGL
 static void GLFramebuffer_GenerateAttachments(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || !cv_glframebuffer.value)
 		return;
 
 	// Bind the framebuffer
@@ -1097,11 +1098,16 @@ static void GLFramebuffer_GenerateAttachments(void)
 
 	// Unbind the framebuffer
 	pglBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	fboinit = true;
 }
 
 void GLFramebuffer_DeleteAttachments(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || fboinit == false)
+		return;
+
+	if (FramebufferObject == 0 && RenderbufferObject == 0 && FramebufferTexture == 0)
 		return;
 
 	// Unbind the framebuffer
@@ -1116,11 +1122,12 @@ void GLFramebuffer_DeleteAttachments(void)
 
 	FramebufferTexture = 0;
 	RenderbufferObject = 0;
+	fboinit = false;
 }
 
 static void GLFramebuffer_Generate(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || !cv_glframebuffer.value)
 		return;
 
 	// Generate the framebuffer
@@ -1133,7 +1140,7 @@ static void GLFramebuffer_Generate(void)
 
 static void GLFramebuffer_Delete(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || fboinit == false)
 		return;
 
 	if (FramebufferObject)
@@ -1145,7 +1152,10 @@ static void GLFramebuffer_Delete(void)
 
 inline void GLFramebuffer_Unbind(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || fboinit == false)
+		return;
+
+	if (FramebufferObject == 0 && RenderbufferObject == 0)
 		return;
 
 	pglBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1154,7 +1164,7 @@ inline void GLFramebuffer_Unbind(void)
 
 inline void GLFramebuffer_Enable(void)
 {
-	if (!supportFBO)
+	if (!supportFBO || !cv_glframebuffer.value)
 		return;
 
 	if (FramebufferObject == 0)
@@ -2366,7 +2376,7 @@ EXPORT void HWRAPI(SetSpecialState) (hwdspecialstate_t IdState, INT32 Value)
 			break;
 #ifdef USE_FBO_OGL
 		case HWD_SET_FRAMEBUFFER:
-			FrameBufferEnabled = Value ? GL_TRUE : GL_FALSE;
+			FrameBufferEnabled = (Value && supportFBO) ? GL_TRUE : GL_FALSE;
 
 			if (!supportFBO)
 			{
