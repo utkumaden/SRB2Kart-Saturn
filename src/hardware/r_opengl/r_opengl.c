@@ -713,7 +713,7 @@ static boolean GLFramebuffer_CheckExt(void)
 		return false;
 
 	// check if all needed gl extensions are available
-	return (GL_isExtAvailable("GL_ARB_framebuffer_no_attachments", gl_extensions) && GL_isExtAvailable("GL_ARB_framebuffer_object", gl_extensions) && GL_isExtAvailable("GL_ARB_framebuffer_sRGB", gl_extensions));
+	return (isExtAvailable("GL_ARB_framebuffer_no_attachments", gl_extensions) && isExtAvailable("GL_ARB_framebuffer_object", gl_extensions) && isExtAvailable("GL_ARB_framebuffer_sRGB", gl_extensions));
 }
 #endif
 
@@ -786,18 +786,6 @@ void SetupGLFunc4(void)
 }
 
 #ifdef USE_FBO_OGL
-static boolean GLFramebuffer_IsFuncAvailible(void)
-{
-	//this stuff needs atleast OGL 3.0
-	if (majorGL < 3)
-		return false;
-
-	return (isExtAvailable("GL_ARB_framebuffer_no_attachments",gl_extensions) && isExtAvailable("GL_ARB_framebuffer_object",gl_extensions) && isExtAvailable("GL_ARB_framebuffer_sRGB",gl_extensions));
-
-	return false;
-}
-#endif
-
 EXPORT boolean HWRAPI(InitShaders) (void)
 {
 	if (!pglUseProgram)
@@ -964,7 +952,6 @@ static void GLPerspective(GLfloat fovy, GLfloat aspect)
 
 	pglMultMatrixf(&m[0][0]);
 }
-
 
 // -----------------+
 // SetModelView     :
@@ -1196,8 +1183,6 @@ void GLFramebuffer_Disable(void)
 // -----------------+
 void Flush(void)
 {
-	//GL_DBG_Printf ("HWR_Flush()\n");
-
 	while (TexCacheHead)
 	{
 		FTextureInfo *pTexInfo = TexCacheHead;
@@ -1223,7 +1208,6 @@ void Flush(void)
 	textureBuffer = NULL;
 	textureBufferSize = 0;
 }
-
 
 // -----------------+
 // isExtAvailable   : Look if an OpenGL extension is available
@@ -1252,7 +1236,6 @@ INT32 isExtAvailable(const char *extension, const GLubyte *start)
 	return 0;
 }
 
-
 // -----------------+
 // Init             : Initialise the OpenGL interface API
 // Returns          :
@@ -1261,7 +1244,6 @@ EXPORT boolean HWRAPI(Init) (void)
 {
 	return LoadGL();
 }
-
 
 // -----------------+
 // SetupGLInfo      : Retreive and store currently loaded OpenGL version
@@ -1423,7 +1405,6 @@ static void Clamp2D(GLenum pname)
 	pglTexParameteri(GL_TEXTURE_2D, pname, GL_CLAMP_TO_EDGE);
 #endif
 }
-
 
 // -----------------+
 // SetBlend         : Set render mode
@@ -2272,12 +2253,6 @@ static void gld_BuildSky(int row_count, int col_count)
 		}
 	}
 }
-
-//-----------------------------------------------------------------------------
-//
-//
-//
-//-----------------------------------------------------------------------------
 
 static void RenderDome(INT32 skytexnum)
 {
