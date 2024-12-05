@@ -120,6 +120,7 @@ extern const GLubyte	*gl_version;
 extern const GLubyte	*gl_renderer;
 extern const GLubyte	*gl_extensions;
 extern const GLubyte    *gl_vendor;
+extern GLuint     gl_num_extensions;
 
 extern int 				majorGL, minorGL;
 
