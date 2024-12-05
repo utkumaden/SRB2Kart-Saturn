@@ -119,6 +119,7 @@ extern boolean supportFBO;
 extern const GLubyte	*gl_version;
 extern const GLubyte	*gl_renderer;
 extern const GLubyte	*gl_extensions;
+extern const GLubyte    *gl_vendor;
 
 extern int 				majorGL, minorGL;
 
